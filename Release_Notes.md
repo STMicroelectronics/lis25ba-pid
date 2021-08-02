@@ -38,7 +38,7 @@ This directory contains the LIS25BA component drivers.
 
 ### First release
 
-- First official release
+- First official release [ref. DS v4.0]
 
 ##
 
