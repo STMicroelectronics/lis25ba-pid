@@ -235,12 +235,15 @@ int32_t lis25ba_bus_mode_get(const stmdev_ctx_t *ctx,
     bytecpy((uint8_t *)&tdm_cmax_l, &reg[1]);
   }
 
-  val->tdm.en = ~tdm_ctrl_reg.tdm_pd;
-  val->tdm.clk_pol = tdm_ctrl_reg.data_valid;
-  val->tdm.clk_edge = tdm_ctrl_reg.delayed;
-  val->tdm.mapping = tdm_ctrl_reg.wclk_fq;
-  val->tdm.cmax = tdm_cmax_h.tdm_cmax * 256U;
-  val->tdm.cmax += tdm_cmax_l.tdm_cmax;
+  if (ret == 0)
+  {
+    val->tdm.en = ~tdm_ctrl_reg.tdm_pd;
+    val->tdm.clk_pol = tdm_ctrl_reg.data_valid;
+    val->tdm.clk_edge = tdm_ctrl_reg.delayed;
+    val->tdm.mapping = tdm_ctrl_reg.wclk_fq;
+    val->tdm.cmax = tdm_cmax_h.tdm_cmax * 256U;
+    val->tdm.cmax += tdm_cmax_l.tdm_cmax;
+  }
 
   return ret;
 }
@@ -322,6 +325,8 @@ int32_t lis25ba_mode_get(const stmdev_ctx_t *ctx, lis25ba_md_t *val)
     bytecpy((uint8_t *)&tdm_ctrl_reg, &reg[0]);
     bytecpy((uint8_t *)&axes_ctrl_reg,  &reg[1]);
   }
+
+  if (ret != 0) { return ret; }
 
   val->xl.axis.x = axes_ctrl_reg.axisx_en;
   val->xl.axis.y = axes_ctrl_reg.axisy_en;
@@ -434,7 +439,11 @@ int32_t lis25ba_self_test_get(const stmdev_ctx_t *ctx, uint8_t *val)
   int32_t ret;
 
   ret = lis25ba_read_reg(ctx, LIS25BA_TEST_REG, (uint8_t *)&test_reg, 1);
-  *val = test_reg.st;
+
+  if (ret == 0)
+  {
+    *val = test_reg.st;
+  }
 
   return ret;
 }
